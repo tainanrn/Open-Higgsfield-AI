@@ -30,3 +30,4 @@ out
 *.sln
 *.sw?
 .vercel
+!.env.example

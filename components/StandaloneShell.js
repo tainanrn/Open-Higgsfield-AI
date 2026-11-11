@@ -7,8 +7,10 @@ import {
   LipSyncStudio,
   CinemaStudio,
 } from '@/packages/studio/src';
+import RenderStudio from '@/components/RenderStudio';
 
 const TABS = [
+  { id: 'render', label: 'Render Studio' },
   { id: 'image', label: 'Image Studio' },
   { id: 'video', label: 'Video Studio' },
   { id: 'lipsync', label: 'Lip Sync' },
@@ -16,19 +18,19 @@ const TABS = [
 ];
 
 export default function StandaloneShell() {
-  const [activeTab, setActiveTab] = useState('image');
+  const [activeTab, setActiveTab] = useState('render');
 
   // TEMP FAKE KEY (we will remove this later properly)
   const apiKey = 'internal-safe-mode';
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-white/10 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
         <div className="text-lg font-bold">
           Clabstream AI Studio
         </div>
 
-        <nav className="flex gap-6">
+        <nav className="flex flex-wrap gap-x-6 gap-y-2">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -46,7 +48,7 @@ export default function StandaloneShell() {
       </header>
 
       <main className="p-6">
-        {activeTab === 'image' ? (
+        {activeTab === 'render' ? null : activeTab === 'image' ? (
           <div className="mb-4 rounded border border-lime-500/30 bg-lime-500/10 p-3 text-sm text-lime-200">
             Image generation is active via Hugging Face with automatic backend model fallback.
           </div>
@@ -56,6 +58,7 @@ export default function StandaloneShell() {
           </div>
         )}
 
+        {activeTab === 'render' && <RenderStudio />}
         {activeTab === 'image' && <ImageStudio apiKey={apiKey} />}
         {activeTab === 'video' && <VideoStudio apiKey={apiKey} />}
         {activeTab === 'lipsync' && <LipSyncStudio apiKey={apiKey} />}
