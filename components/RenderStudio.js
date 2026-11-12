@@ -90,6 +90,7 @@ export default function RenderStudio() {
   const [provider, setProvider] = useState('huggingface');
   const [status, setStatus] = useState('idle'); // idle | rendering | done | error
   const [error, setError] = useState(null);
+  const [errorDetails, setErrorDetails] = useState([]);
   const [results, setResults] = useState([]); // { url, before, model, settings }
   const [selected, setSelected] = useState(0);
   const [dragOver, setDragOver] = useState(false);
@@ -128,6 +129,7 @@ export default function RenderStudio() {
     }
     setStatus('rendering');
     setError(null);
+    setErrorDetails([]);
 
     const form = new FormData();
     form.append('file', file);
@@ -148,6 +150,7 @@ export default function RenderStudio() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        setErrorDetails(Array.isArray(data.details) ? data.details : []);
         throw new Error(data.error || `Falha no render (${res.status})`);
       }
 
@@ -306,6 +309,13 @@ export default function RenderStudio() {
         {error && (
           <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
             {error}
+            {errorDetails.length > 0 && (
+              <span className="mt-2 block space-y-1 break-words font-mono text-xs text-red-200/80">
+                {errorDetails.map((d) => (
+                  <span key={d} className="block">• {d}</span>
+                ))}
+              </span>
+            )}
           </p>
         )}
       </aside>
