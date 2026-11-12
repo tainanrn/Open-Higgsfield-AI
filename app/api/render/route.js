@@ -55,13 +55,15 @@ async function renderWithHuggingFace(file, prompt) {
     }
   }
 
+  console.error('[render] Hugging Face attempts failed', JSON.stringify(attempts));
   const lastError = attempts.at(-1)?.error || 'unknown error';
-  const outOfCredits = attempts.some((a) => /402|credit|quota|exceeded|payment/i.test(a.error));
+  const outOfCredits = attempts.every((a) => /\b402\b|credits|quota|payment required/i.test(a.error));
   return Response.json(
     {
       error: outOfCredits
-        ? 'Os créditos gratuitos mensais do Hugging Face acabaram. Tente no próximo mês ou use o Muapi.'
+        ? 'O Hugging Face recusou por falta de créditos. Veja os detalhes abaixo.'
         : `Nenhum modelo gratuito do Hugging Face conseguiu renderizar agora: ${lastError}`,
+      details: attempts.map((a) => `${a.model}: ${a.error}`),
       attempts,
     },
     { status: 502 },
